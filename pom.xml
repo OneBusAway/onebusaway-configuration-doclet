@@ -41,7 +41,6 @@
     <profile>
       <id>linux-tools.jar</id>
       <activation>
-        <jdk>[1.5,)</jdk>
         <os>
           <family>linux</family>
         </os>
@@ -59,7 +58,6 @@
     <profile>
       <id>mac-tools.jar</id>
       <activation>
-        <jdk>[1.5,)</jdk>
         <os>
           <family>mac</family>
         </os>
