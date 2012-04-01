@@ -1,0 +1,79 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>onebusaway</artifactId>
+    <groupId>org.onebusaway</groupId>
+    <version>1.1.7</version>
+  </parent>
+  <artifactId>onebusaway-configuration-doclet</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <name>onebusaway-configuration-doclet</name>
+  <description>A Javadoc doclet to automatically generate configuration documentation from source code.</description>
+  <url>https://github.com/OneBusAway/onebusaway-configuration-doclet/wiki/</url>
+
+  <repositories>
+    <repository>
+      <id>public.onebusaway.org</id>
+      <url>http://nexus.onebusaway.org/content/groups/public/</url>
+    </repository>
+  </repositories>
+
+  <scm>
+    <connection>scm:git:http://github.com/OneBusAway/onebusaway-configuration-doclet.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/OneBusAway/onebusaway-configuration-doclet.git</developerConnection>
+    <url>http://github.com/OneBusAway/onebusaway-configuration-doclet</url>
+  </scm>
+
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/OneBusAway/onebusaway-configuration-doclet/issues</url>
+  </issueManagement>
+
+  <distributionManagement>
+    <!-- Even though we specify this in the parent pom, we need to specify it here to have full control over the url -->
+    <site>
+      <id>${site_id}</id>
+      <url>${site_url}</url>
+    </site>
+  </distributionManagement>
+
+  <profiles>
+    <profile>
+      <id>linux-tools.jar</id>
+      <activation>
+        <jdk>[1.5,)</jdk>
+        <os>
+          <family>linux</family>
+        </os>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>com.sun</groupId>
+          <artifactId>tools</artifactId>
+          <version>${java.version}</version>
+          <scope>system</scope>
+          <systemPath>${java.home}/../lib/tools.jar</systemPath>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>mac-tools.jar</id>
+      <activation>
+        <jdk>[1.5,)</jdk>
+        <os>
+          <family>mac</family>
+        </os>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>com.sun</groupId>
+          <artifactId>tools</artifactId>
+          <version>${java.version}</version>
+          <scope>system</scope>
+          <systemPath>${java.home}/../Classes/classes.jar</systemPath>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
+</project>
