@@ -15,7 +15,9 @@
  */
 package org.onebusaway.configuration_doclet;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -99,8 +101,8 @@ public class ConfigurationDoclet {
   }
 
   private void processClasses(RootDoc root) throws IOException {
-    PrintWriter writer = new PrintWriter(new FileWriter(new File(
-        _outputDirectory, "index.xml")));
+    File xmlFile = new File(_outputDirectory, "index.xml");
+    PrintWriter writer = new PrintWriter(new FileWriter(xmlFile));
     writer.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
     writer.println("<beans xmlns=\"http://www.springframework.org/schema/beans\"");
     writer.println("  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"");
@@ -110,15 +112,10 @@ public class ConfigurationDoclet {
     writer.println("    <property name=\"properties\">");
     writer.println("      <props>");
 
-    // <prop key="defaultWebappConfigurationSource.googleMapsApiKey">what</prop>
-
     ClassDoc[] classes = root.classes();
     for (int i = 0; i < classes.length; ++i) {
       for (MethodDoc method : classes[i].methods()) {
         if (hasMatchingAnnotation(method)) {
-
-          System.out.println(classes[i] + "#" + method.name());
-          System.out.println("commentText=" + method.commentText());
 
           String beanName = getBeanNameForClass(classes[i]);
           String propertyName = getPropertyName(method);
@@ -135,12 +132,6 @@ public class ConfigurationDoclet {
           writer.println("        <prop key=\"" + beanName + "." + propertyName
               + "\">...</prop>");
           writer.println();
-
-          for (ParamTag tag : method.paramTags()) {
-            System.out.println("  tag=" + tag.name() + " "
-                + tag.parameterName() + " " + tag.parameterComment());
-
-          }
         }
       }
     }
@@ -149,7 +140,11 @@ public class ConfigurationDoclet {
     writer.println("    </property>");
     writer.println("  </bean>");
     writer.println("</beans>");
+
     writer.close();
+
+    File htmlFile = new File(_outputDirectory, "index.html");
+    convertXmlToHtml(xmlFile, htmlFile);
   }
 
   private boolean hasMatchingAnnotation(MethodDoc method) {
@@ -202,15 +197,37 @@ public class ConfigurationDoclet {
       return "";
     }
     ParamTag tag = tags[0];
+    if (tag.parameterComment().isEmpty()) {
+      return "";
+    }
     return propertyName + " - " + tag.parameterComment();
   }
 
   private void add(String value, List<String> values) {
+    if (value.isEmpty()) {
+      return;
+    }
     if (!values.isEmpty()) {
       values.add("");
     }
     for (String line : value.split("\n")) {
       values.add(line.trim());
     }
+  }
+
+  private void convertXmlToHtml(File xmlFile, File htmlFile) throws IOException {
+    BufferedReader reader = new BufferedReader(new FileReader(xmlFile));
+    PrintWriter writer = new PrintWriter(htmlFile);
+    writer.println("<html><body><pre>");
+    String line = null;
+    while ((line = reader.readLine()) != null) {
+      line = line.replaceAll("&", "&amp;");
+      line = line.replaceAll("<", "&lt;");
+      line = line.replaceAll(">", "&gt;");
+      writer.println(line);
+    }
+    writer.println("</pre></body></html>");
+    reader.close();
+    writer.close();
   }
 }
